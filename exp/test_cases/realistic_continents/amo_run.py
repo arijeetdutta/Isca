@@ -6,7 +6,7 @@ import f90nml
 
 from isca import IscaCodeBase, DiagTable, Experiment, Namelist, GFDL_BASE
 
-NCORES = 16
+NCORES = 32
 base_dir = os.path.dirname(os.path.realpath(__file__))
 # a CodeBase can be a directory on the computer,
 # useful for iterative development
@@ -72,6 +72,6 @@ exp.update_namelist({
 
 #Lets do a run!
 if __name__=="__main__":
-    exp.run(1, use_restart=False, num_cores=NCORES)
-    for i in range(2,120):
+    exp.run(361, use_restart=True, num_cores=NCORES)
+    for i in range(2,601):
         exp.run(i, num_cores=NCORES)

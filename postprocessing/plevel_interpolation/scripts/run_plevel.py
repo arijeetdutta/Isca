@@ -1,4 +1,4 @@
-from netCDF4 import Dataset  
+#from netCDF4 import Dataset  
 from plevel_fn import plevel_call, daily_average, join_files, two_daily_average, monthly_average
 import sys
 import os
@@ -7,11 +7,11 @@ import pdb
 import subprocess
 
 start_time=time.time()
-base_dir='/scratch/sit204/Data_2013/'
-exp_name_list = ['no_ice_flux_lhe_exps_q_flux_hadgem_anoms_3']
+base_dir='/rds/homes/d/duttaay/geenr-bridge-monsoon/isca_data/'
+exp_name_list = ['amo_test_experiment']
 avg_or_daily_list=['monthly']
-start_file=287
-end_file=288
+start_file=1
+end_file=360
 nfiles=(end_file-start_file)+1
 
 do_extra_averaging=False #If true, then 6hourly data is averaged into daily data using cdo
@@ -30,8 +30,8 @@ var_names={}
 
 if level_set=='standard':
 
-    plevs['monthly']=' -p "3 16 51 138 324 676 1000 1266 2162 3407 5014 6957 9185 10000 11627 14210 16864 19534 20000 22181 24783 27331 29830 32290 34731 37173 39637 42147 44725 47391 50164 53061 56100 59295 62661 66211 70000 73915 78095 82510 85000 87175 92104 97312"'
-
+    # plevs['monthly']=' -p "3 16 51 138 324 676 1000 1266 2162 3407 5014 6957 9185 10000 11627 14210 16864 19534 20000 22181 24783 27331 29830 32290 34731 37173 39637 42147 44725 47391 50164 53061 56100 59295 62661 66211 70000 73915 78095 82510 85000 87175 92104 97312"'
+    plevs['monthly']=' -p "5000 10000 15000 20000 25000 30000 40000 50000 60000 70000 75000 80000 85000 90000 95000 100000"'
     plevs['timestep']=' -p "3 16 51 138 324 676 1000 1266 2162 3407 5014 6957 9185 10000 11627 14210 16864 19534 20000 22181 24783 27331 29830 32290 34731 37173 39637 42147 44725 47391 50164 53061 56100 59295 62661 66211 70000 73915 78095 82510 85000 87175 92104 97312"'
 
     plevs['pentad']=' -p "3 16 51 138 324 676 1000 1266 2162 3407 5014 6957 9185 10000 11627 14210 16864 19534 20000 22181 24783 27331 29830 32290 34731 37173 39637 42147 44725 47391 50164 53061 56100 59295 62661 66211 70000 73915 78095 82510 85000 87175 92104 97312"'
@@ -39,7 +39,7 @@ if level_set=='standard':
     plevs['6hourly']=' -p "1000 10000 25000 50000 85000 92500"'
     plevs['daily']  =' -p "1000 10000 25000 50000 85000 92500"'
     
-    var_names['monthly']='-a slp height'
+    var_names['monthly']='-a'
     var_names['pentad']='-a slp height'    
     var_names['timestep']='-a'
     var_names['6hourly']='ucomp slp height vor t_surf vcomp omega'

@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --job-name=Isca_fixed_sst 
+#SBATCH --job-name=Isca_interpolate
 ##SBATCH -D . # set working directory to .
 ##SBATCH -p pq # submit to the parallel queue
-#SBATCH --time=12:00:00
+#SBATCH --time=1:00:00
 #SBATCH --nodes=1
 ##SBATCH --mem-per-cpu=6400M
 #SBATCH --ntasks=32
@@ -17,4 +17,4 @@ module purge; module load bluebear
 source ~/.bashrc
 conda activate isca_env
 
-python test_sst.py
+python run_plevel.py

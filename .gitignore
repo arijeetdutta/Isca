@@ -34,6 +34,7 @@ Makefile
 *.out
 *.dump
 *.nc
+*.ipynb
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -1,7 +1,8 @@
 #!/bin/bash
+#SBATCH --nodes=1
 #SBATCH --ntasks=16
 #SBATCH --time=25:0
-#SBATCH --mail-type=ALL
+##SBATCH --mail-type=ALL
 #SBATCH --account=geenr-bridge-monsoon
 #SBATCH --qos=bbdefault
 
