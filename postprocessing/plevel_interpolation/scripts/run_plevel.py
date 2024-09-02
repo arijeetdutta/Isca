@@ -8,10 +8,11 @@ import subprocess
 
 start_time=time.time()
 base_dir='/rds/homes/d/duttaay/geenr-bridge-monsoon/isca_data/'
-exp_name_list = ['amo_test_experiment']
+#exp_name_list = ['amo_test_experiment']
+exp_name_list = ['realistic_continents_fixed_sst_test_experiment']
 avg_or_daily_list=['monthly']
 start_file=1
-end_file=360
+end_file=600
 nfiles=(end_file-start_file)+1
 
 do_extra_averaging=False #If true, then 6hourly data is averaged into daily data using cdo

@@ -72,6 +72,6 @@ exp.update_namelist({
 
 #Lets do a run!
 if __name__=="__main__":
-    exp.run(361, use_restart=True, num_cores=NCORES)
+    exp.run(1, use_restart=False, num_cores=NCORES)
     for i in range(2,601):
         exp.run(i, num_cores=NCORES)

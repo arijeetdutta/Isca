@@ -18,28 +18,34 @@ module load bear-apps/2023a
 module load CDO/2.2.2-gompi-2023a
 
 
+ddir=/rds/homes/d/duttaay/geenr-bridge-monsoon/isca_data/realistic_continents_fixed_sst_test_experiment
+# ddir=/rds/homes/d/duttaay/geenr-bridge-monsoon/isca_data/amo_test_experiment
+cd $ddir
 
+echo "creating tmp directory"
+mkdir -p $ddir/tmp/
 
-# from chatgpt
-output_dir="/rds/homes/d/duttaay/geenr-bridge-monsoon/isca_data/amo_test_experiment"
-cd /rds/homes/d/duttaay/geenr-bridge-monsoon/isca_data/amo_test_experiment
-# Get a list of all unique file names in the subdirectories
-file_names=$(find . -type f -name "atmos_monthly_interp_new_height_temp.nc" -exec basename {} \; | sort)
+# Find directories with both letters and numbers in their names
+dirs=$(find . -type d -name '*[a-zA-Z]*' | grep -E '[0-9]' | sort -V)
 
-# Loop over each unique file name
-for file_name in $file_names; do
-    # Find all files with the current name
-    files=$(find . -type f -name "$file_name")
-    echo "${files[@]}"
-    # If more than one file with this name exists, merge them
-    if [ $(echo "$files" | wc -l) -gt 1 ]; then
-        # Define the output file path
-        output_file="$output_dir/$file_name"
+# Iterate over sorted directories
+for dir in $dirs; do
 
-        # Merge the files using cdo
-        echo "Merging files for $file_name into $output_file"
-        cdo mergetime $files "$output_file"
-    else
-        echo "Only one file found for $file_name, no merge needed."
-    fi
+	    # echo "Processing directory: $dir"
+	    numbers="${dir//[^0-9]/}"
+
+	    echo "copying files to tmp and renaming"
+        cp $dir/atmos_monthly_interp_new_height_temp.nc $ddir/tmp/$numbers.nc
+	    ls -l $ddir/tmp/$numbers.nc
+	    
+
 done
+
+cd $ddir/tmp/
+rm -rf $ddir/output.nc
+echo "cdo mergetime"
+cdo mergetime $ddir/tmp/*.nc $ddir/output.nc
+echo "removing tmp"
+rm -rf $ddir/tmp/
+ls -l $ddir/output.nc
+echo "completed"

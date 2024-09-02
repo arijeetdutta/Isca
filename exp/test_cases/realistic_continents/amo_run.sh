@@ -2,7 +2,7 @@
 #SBATCH --job-name=Isca_amo_run 
 ##SBATCH -D . # set working directory to .
 ##SBATCH -p pq # submit to the parallel queue
-#SBATCH --time=14:00:00
+#SBATCH --time=28:00:00
 #SBATCH --nodes=1
 ##SBATCH --mem-per-cpu=6400M
 #SBATCH --ntasks=32
@@ -13,8 +13,9 @@
 #SBATCH --output=slurm_dump/%j.out
 
 set -e
+
 module purge; module load bluebear
-source ~/.bashrc
+source "/rds/homes/d/duttaay/miniforge3/etc/profile.d/conda.sh"
 conda activate isca_env
 
 python amo_run.py
