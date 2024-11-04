@@ -1,2 +1,3 @@
-cd /rds/homes/d/duttaay/geenr-bridge-monsoon/isca_data/amo_test_experiment
-find . -type f -name "atmos_monthly_interp_new_height_temp.nc" -exec rm -f {} +
+cd /rds/homes/d/duttaay/geenr-bridge-monsoon/isca_data/aquaplanet_experiment
+# cd /rds/homes/d/duttaay/geenr-bridge-monsoon/isca_data/na_sst
+find . -type f -name "atmos_6_hourly.nc" -exec rm -f {} +

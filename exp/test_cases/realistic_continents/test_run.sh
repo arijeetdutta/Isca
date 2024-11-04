@@ -2,7 +2,7 @@
 #SBATCH --job-name=Isca_fixed_sst 
 ##SBATCH -D . # set working directory to .
 ##SBATCH -p pq # submit to the parallel queue
-#SBATCH --time=28:00:00
+#SBATCH --time=56:00:00
 #SBATCH --nodes=1
 ##SBATCH --mem-per-cpu=6400M
 #SBATCH --ntasks=32

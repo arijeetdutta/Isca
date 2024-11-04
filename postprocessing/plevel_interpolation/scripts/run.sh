@@ -2,7 +2,7 @@
 #SBATCH --job-name=Isca_interpolate
 ##SBATCH -D . # set working directory to .
 ##SBATCH -p pq # submit to the parallel queue
-#SBATCH --time=1:00:00
+#SBATCH --time=3:00:00
 #SBATCH --nodes=1
 ##SBATCH --mem-per-cpu=6400M
 #SBATCH --ntasks=32

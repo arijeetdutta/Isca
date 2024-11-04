@@ -18,30 +18,29 @@ module load bear-apps/2023a
 module load CDO/2.2.2-gompi-2023a
 
 
-# ddir=/rds/homes/d/duttaay/geenr-bridge-monsoon/isca_data/realistic_continents_fixed_sst_test_experiment
-# ddir=/rds/homes/d/duttaay/geenr-bridge-monsoon/isca_data/na_sst
 ddir=/rds/homes/d/duttaay/geenr-bridge-monsoon/isca_data/aquaplanet_experiment
 cd $ddir
-
 echo "creating tmp directory"
 mkdir -p $ddir/tmp/
 
-# Find directories with both letters and numbers in their names
-dirs=$(find . -type d -name '*[a-zA-Z]*' | grep -E '[0-9]' | sort -V)
 
-# Iterate over sorted directories
-for dir in $dirs; do
+# for i in $(seq -w 000 600); do
+for i in $(seq -f "%04g" 121 1200); do
+    dir="/rds/homes/d/duttaay/geenr-bridge-monsoon/isca_data/aquaplanet_experiment/run$i"
+    # file_path="$dir/atmos_6_hourly_interp_new_height_temp.nc"
+    
+    # Check if the directory exists
+    if [ -d "$dir" ]; then
 
-	    # echo "Processing directory: $dir"
-	    numbers="${dir//[^0-9]/}"
+        echo "Processing directory: $dir"
+        cp $dir/atmos_daily_mean.nc $ddir/tmp/$i.nc
+        ls -l $ddir/tmp/$i.nc
 
-	    echo "copying files to tmp and renaming"
-        # cp $dir/atmos_monthly_interp_new_height_temp.nc $ddir/tmp/$numbers.nc
-		cp $dir/atmos_daily_mean.nc $ddir/tmp/$numbers.nc
-	    ls -l $ddir/tmp/$numbers.nc
-	    
-
+    else
+        echo "Directory not found: $dir"
+    fi
 done
+
 
 cd $ddir/tmp/
 rm -rf $ddir/output.nc
@@ -51,3 +50,4 @@ echo "removing tmp"
 rm -rf $ddir/tmp/
 ls -l $ddir/output.nc
 echo "completed"
+

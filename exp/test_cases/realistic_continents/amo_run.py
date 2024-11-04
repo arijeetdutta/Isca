@@ -25,11 +25,11 @@ cb.compile()  # compile the source code to working directory $GFDL_WORK/codebase
 
 # create an Experiment object to handle the configuration of model parameters
 # and output diagnostics
-exp = Experiment('amo_test_experiment', codebase=cb)
+exp = Experiment('amo_ext_experiment', codebase=cb)
 
 #Add any input files that are necessary for a particular experiment.
 exp.inputfiles = [os.path.join(GFDL_BASE,'input/land_masks/era_land_t42.nc'),os.path.join(GFDL_BASE,'input/rrtm_input_files/ozone_1990.nc'),
-                      os.path.join(base_dir,'input/sst_clim_plus_amo_ssta.nc'), os.path.join(base_dir,'input/siconc_clim_amip.nc')]
+                      os.path.join(base_dir,'input/ext_na_sst.nc'), os.path.join(base_dir,'input/siconc_clim_amip.nc')]
 
 #Tell model how to write diagnostics
 diag = DiagTable()
@@ -65,13 +65,13 @@ exp.update_namelist({
         'do_qflux' : False, #Don't use the prescribed analytical formula for q-fluxes
         'do_read_sst' : True, #Read in sst values from input file
         'do_sc_sst' : True, #Do specified ssts (need both to be true)
-        'sst_file' : 'sst_clim_plus_amo_ssta', #Set name of sst input file
+        'sst_file' : 'ext_na_sst', #Set name of sst input file
         'specify_sst_over_ocean_only' : True, #Make sure sst only specified in regions of ocean.
     }
 })
 
 #Lets do a run!
 if __name__=="__main__":
-    exp.run(1, use_restart=False, num_cores=NCORES)
-    for i in range(2,601):
+    exp.run(701, use_restart=True, num_cores=NCORES)
+    for i in range(702,1201):
         exp.run(i, num_cores=NCORES)
