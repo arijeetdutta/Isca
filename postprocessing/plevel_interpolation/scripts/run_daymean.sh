@@ -19,10 +19,10 @@ module load CDO/1.9.10-gompi-2020b
 
 # Loop over each directory named run0xxx, where xxx ranges from 000 to 600
 # for i in $(seq -w 000 600); do
-for i in $(seq -f "%04g" 121 1200); do
+for i in $(seq -f "%04g" 121 660); do
 
-    dir="/rds/homes/d/duttaay/geenr-bridge-monsoon/isca_data/aquaplanet_experiment/run$i"
-    file_path="$dir/atmos_6_hourly_interp_new_height_temp.nc"
+    dir="/rds/homes/d/duttaay/geenr-bridge-monsoon/isca_data/idealised_land/run$i"
+    file_path="$dir/atmos_6hourly_interp_new_height_temp.nc"
     
     # Check if the directory exists
     if [ -d "$dir" ]; then

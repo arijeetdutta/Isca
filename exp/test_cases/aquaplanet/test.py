@@ -38,13 +38,18 @@ diag.add_file('atmos_6_hourly', 6, 'hours', time_units='hours')
 diag.add_field('dynamics', 'ps', time_avg=True)
 diag.add_field('dynamics', 'bk')
 diag.add_field('dynamics', 'pk')
+diag.add_field('dynamics', 'zsurf') #need at least ps, pk, bk and zsurf to do vertical interpolation onto plevels from sigma
+diag.add_field('dynamics', 'slp', time_avg=True)
+diag.add_field('dynamics', 'temp', time_avg=True)
+diag.add_field('dynamics', 'sphum', time_avg=True)
+diag.add_field('dynamics', 'height', time_avg=True)
+
 diag.add_field('atmosphere', 'precipitation', time_avg=True)
 diag.add_field('atmosphere', 'dt_ug_diffusion', time_avg=True)
-# diag.add_field('mixed_layer', 't_surf', time_avg=True)
-# diag.add_field('dynamics', 'sphum', time_avg=True)
+diag.add_field('mixed_layer', 't_surf', time_avg=True)
 diag.add_field('dynamics', 'ucomp', time_avg=True)
 diag.add_field('dynamics', 'vcomp', time_avg=True)
-# diag.add_field('dynamics', 'temp', time_avg=True)
+
 # diag.add_field('dynamics', 'vor', time_avg=True)
 # diag.add_field('dynamics', 'div', time_avg=True)
 diag.add_field('dynamics', 'ucomp_vcomp', time_avg=True)
@@ -52,7 +57,7 @@ diag.add_field('dynamics', 'ucomp_omega', time_avg=True)
 diag.add_field('dynamics', 'ucomp_sq', time_avg=True)
 diag.add_field('dynamics', 'vcomp_sq', time_avg=True)
 diag.add_field('dynamics', 'vcomp_omega', time_avg=True)
-diag.add_field('dynamics', 'height', time_avg=True)
+
 diag.add_field('dynamics', 'omega', time_avg=True)
 diag.add_field('damping', 'udt_rdamp', time_avg=True)
 
@@ -181,6 +186,6 @@ exp.namelist = namelist = Namelist({
 
 #Lets do a run!
 if __name__=="__main__":
-    exp.run(2, use_restart=True, overwrite_data=True, num_cores=NCORES)
+    exp.run(1, use_restart=False, overwrite_data=True, num_cores=NCORES)
     for i in range(2,3):
-        exp.run(i, num_cores=NCORES)
+        exp.run(i, overwrite_data=True, num_cores=NCORES)

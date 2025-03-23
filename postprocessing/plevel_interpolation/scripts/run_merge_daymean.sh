@@ -18,15 +18,16 @@ module load bear-apps/2023a
 module load CDO/2.2.2-gompi-2023a
 
 
-ddir=/rds/homes/d/duttaay/geenr-bridge-monsoon/isca_data/aquaplanet_experiment
+ddir=/rds/homes/d/duttaay/geenr-bridge-monsoon/isca_data/idealised_land
 cd $ddir
 echo "creating tmp directory"
 mkdir -p $ddir/tmp/
+rm -rf $ddir/tmp/*
 
 
 # for i in $(seq -w 000 600); do
-for i in $(seq -f "%04g" 121 1200); do
-    dir="/rds/homes/d/duttaay/geenr-bridge-monsoon/isca_data/aquaplanet_experiment/run$i"
+for i in $(seq -f "%04g" 121 660); do
+    dir="/rds/homes/d/duttaay/geenr-bridge-monsoon/isca_data/idealised_land/run$i"
     # file_path="$dir/atmos_6_hourly_interp_new_height_temp.nc"
     
     # Check if the directory exists
