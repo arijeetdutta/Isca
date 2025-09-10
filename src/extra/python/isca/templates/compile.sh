@@ -2,6 +2,9 @@
 # Compiles the Isca Model
 
 # 0. Source the environment file to load appropriate variables
+source ~/.bashrc
+#conda activate isca_env
+conda activate isca_env_no_comp
 source {{ env_source }}
 
 # 1. Configuration
@@ -18,9 +21,9 @@ template_debug={{ template_dir }}/mkmf.template.debug
 execdir={{ execdir }}        # where code is compiled and executable is created
 executable={{ executable_name }}
 
-netcdf_flags=`nf-config --fflags --flibs`
+#netcdf_flags=`nf-config --fflags --flibs`
 
-ulimit -s unlimited # Set stack size to unlimited
+#ulimit -s unlimited # Set stack size to unlimited
 export MALLOC_CHECK_=0
 
 # 3. compile the mppncombine tool if it hasn't yet been done.

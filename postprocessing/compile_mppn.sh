@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 # Compiles the mppncombine tool (tested on emps-gv2.ex.ac.uk) - copied from JP's compile.sh 
 
 
@@ -7,7 +6,8 @@ hostname=`hostname`
 ppdir=./                 # path to directory containing the tool for combining distributed diagnostic output files
 #-----------------------------------------------------------------------------------------------------
 
-
+source ~/.bashrc
+conda activate isca_env
 
 # 2. Load the necessary tools into the environment
 source $GFDL_BASE/src/extra/env/$GFDL_ENV
