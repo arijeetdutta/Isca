@@ -8,7 +8,7 @@ import subprocess
 
 start_time=time.time()
 base_dir='/home/users/duttaay/bridge_monsoon/arijeet/isca_data'
-exp_name_list = ['Neale_Hoskins_SST']
+exp_name_list = ['idealised_continents']
 # avg_or_daily_list=['monthly']
 avg_or_daily_list=['6hourly']
 start_file=121

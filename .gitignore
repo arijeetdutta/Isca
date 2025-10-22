@@ -18,7 +18,7 @@ src/extra/python/scripts/*.nc
 src/extra/python/scripts/archived/
 *.sh.*
 src/atmos_param/socrates/src/trunk*
-
+slurm_dump/
 # Temporary files
 *.x
 *.o
