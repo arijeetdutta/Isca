@@ -31,4 +31,4 @@ CC = mpicc
 #LDFLAGS = -L$(NETCDFF_ROOT)/lib -lnetcdff -lnetcdf -lmpi -shared-intel
 LDFLAGS  = -L$(NETCDFF_ROOT)/lib -lnetcdff $(NETCDF_LIBS) -lmpi -shared-intel
 #CFLAGS = -D__IFC
-CFLAGS = -DHAVE_GETTID -fPIC -g -O2 
+CFLAGS = -DHAVE_GETTID -fPIC -g -O2 -traceback

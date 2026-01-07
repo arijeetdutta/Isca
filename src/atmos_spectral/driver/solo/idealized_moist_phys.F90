@@ -174,6 +174,7 @@ real, allocatable, dimension(:,:    ) :: dt_bucket, filt
 real, allocatable, dimension(:,:)   ::                                        &
      z_surf,               &   ! surface height
      t_surf,               &   ! surface temperature
+     mld,                  &   ! mixed layer depth AD
      q_surf,               &   ! surface moisture
      u_surf,               &   ! surface U wind
      v_surf,               &   ! surface V wind
@@ -554,6 +555,7 @@ allocate(t_ref (is:ie, js:je, num_levels)); t_ref = 0.0
 allocate(q_ref (is:ie, js:je, num_levels)); q_ref = 0.0
 
 allocate (albedo      (is:ie, js:je)) ! allocate for albedo, to be set in mixed_layer_init.
+allocate (mld      (is:ie, js:je)) !AD allocate for MLD, to be set in mixed_layer_init. 
 allocate(coszen       (is:ie, js:je)) ! allocate coszen to be set in run_rrtmg
 allocate(pbltop       (is:ie, js:je)) ! allocate coszen to be set in run_rrtmg
 
@@ -642,7 +644,7 @@ if(mixed_layer_bc) then
   ! to quickly enter the atmosphere avoiding problems with the convection scheme
   t_surf = t_surf_init + 1.0
 
-  call mixed_layer_init(is, ie, js, je, num_levels, t_surf, bucket_depth, get_axis_id(), Time, albedo, rad_lonb_2d(:,:), rad_latb_2d(:,:), land, bucket) ! t_surf is intent(inout) ! albedo distribution set here.
+  call mixed_layer_init(is, ie, js, je, num_levels, t_surf, mld, bucket_depth, get_axis_id(), Time, albedo, rad_lonb_2d(:,:), rad_latb_2d(:,:), land, bucket) ! t_surf is intent(inout) ! albedo distribution set here.
 
 elseif(gp_surface) then
   albedo=0.0
@@ -1311,6 +1313,8 @@ if(turb) then
                               js,                                          & 
                               je,                                          &
                               t_surf(:,:),                                 & ! t_surf is intent(inout)
+                              mld(:,:),                                    & !AD mld is intent(inout)
+                              land(:,:),                                    & !AD 
                               flux_t(:,:),                                 &
                               flux_q(:,:),                                 &
                               flux_r(:,:),                                 &
