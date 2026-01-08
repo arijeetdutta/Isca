@@ -176,7 +176,7 @@ integer ::                                                                    &
      id_albedo,            &   ! mj albedo
      id_ice_conc,          &   ! st ice concentration
      id_delta_t_surf,      & 
-     id_eff_heat_capacity
+     id_mld                    ! AD mixed layer depth
 
 real, allocatable, dimension(:,:)   ::                                        &
      ocean_qflux,           &   ! Q-flux
@@ -327,7 +327,6 @@ call get_deg_lon(deg_lon)
     endif
 
     !AD read fixed MLD
-    write(*,*) 'mld file',mld_file
     if( do_read_mld ) then
         call interpolator_init( mld_interp, trim(mld_file)//'.nc', rad_lonb_2d, rad_latb_2d, data_out_of_bounds=(/CONSTANT/) )
     endif      
@@ -365,7 +364,7 @@ else
   call error_mesg('mixed_layer','mixed_layer restart file not found - initializing from lowest model level temp', WARNING)
 
 endif
-
+! print *, 'min/max SST = ', minval(t_surf), maxval(t_surf) ! AD
 if(trim(ice_albedo_method) == 'ramp_function') then
   call error_mesg('mixed_layer','Alternative method ramp_function used for ice albedo output.', NOTE)
 endif
@@ -382,8 +381,8 @@ id_heat_cap = register_static_field(mod_name, 'ml_heat_cap',        &
                                  axes(1:2), 'mixed layer heat capacity','joules/m^2/deg C')
 id_delta_t_surf = register_diag_field(mod_name, 'delta_t_surf',        &
                                  axes(1:2), Time, 'change in sst','K')
-id_eff_heat_capacity = register_diag_field(mod_name, 'eff_heat_capacity',        &
-                                axes(1:2), Time, 'heat capacity','units')        ! AD                         
+id_mld = register_diag_field(mod_name, 'mld',        &
+                                axes(1:2), Time, 'mixed layer depth','m')        ! AD                         
 if (update_albedo_from_ice) then
     id_albedo = register_diag_field(mod_name, 'albedo',    &
                                  axes(1:2), Time, 'surface albedo', 'none')
@@ -527,19 +526,21 @@ endif
 
 !s begin surface heat capacity calculation
 !AD use mld
-if (do_sc_mld) then
+if (do_sc_mld .and. do_calc_eff_heat_cap) then
 
    ! user-defined depth for land heat capacity caluclation
-   land_sea_heat_capacity = depth*RHO_CP
+   ! land_sea_heat_capacity = depth*RHO_CP
 
    call interpolator( mld_interp, Time, mld, trim(mld_file) )
+   ! print *, 'min/max MLD = ', minval(mld), maxval(mld) ! AD
 
    where (land)
-      land_sea_heat_capacity = land_h_capacity_prefactor * land_sea_heat_capacity
+      land_sea_heat_capacity = land_h_capacity_prefactor *  depth * RHO_CP
    elsewhere
       land_sea_heat_capacity = mld * RHO_CP ! over ocean use mld from file
    end where
 
+   
 
 else
 
@@ -593,6 +594,8 @@ endif
 
 if ( id_heat_cap > 0 ) used = send_data ( id_heat_cap, land_sea_heat_capacity )
 !s end surface heat capacity calculation
+
+! if(id_mld > 0)   used = send_data(id_mld, mld) ! AD
 
 module_is_initialized = .true.
 
@@ -766,7 +769,7 @@ if (do_calc_eff_heat_cap) then
    ! AD use mld from file
    call interpolator( mld_interp, Time, mld_new, trim(mld_file) )
     where(land)
-      eff_heat_capacity = land_h_capacity_prefactor * depth * RHO_CP
+      eff_heat_capacity = land_h_capacity_prefactor * depth * RHO_CP + t_surf_dependence * dt
       ! write(*,*) 'eff_heat_capacity', eff_heat_capacity
     elsewhere
       eff_heat_capacity = (mld_new * RHO_CP) + t_surf_dependence * dt
@@ -805,7 +808,6 @@ if(id_flux_lhe > 0) used = send_data(id_flux_lhe, HLV * flux_q_total, Time_next)
 if(id_flux_oceanq > 0)   used = send_data(id_flux_oceanq, ocean_qflux, Time_next)
 
 if(id_delta_t_surf > 0)   used = send_data(id_delta_t_surf, delta_t_surf, Time_next)
-if(id_eff_heat_capacity > 0)   used = send_data(id_eff_heat_capacity, eff_heat_capacity, Time_next) ! AD
 
 end subroutine mixed_layer
 
