@@ -645,8 +645,8 @@ if(mixed_layer_bc) then
   t_surf = t_surf_init + 1.0
 
   call mixed_layer_init(is, ie, js, je, num_levels, t_surf, mld, bucket_depth, get_axis_id(), Time, albedo, rad_lonb_2d(:,:), rad_latb_2d(:,:), land, bucket) ! t_surf is intent(inout) ! albedo distribution set here.
-  print *, 'MLD: min and max values = ', minval(mld), maxval(mld) ! AD
-  print *, 't_surf: min and max values = ', minval(t_surf), maxval(t_surf) ! AD
+  print *, 'MLD: min/max = ', minval(mld), maxval(mld) ! AD
+  print *, 't_surf: min/max = ', minval(t_surf), maxval(t_surf) ! AD
 
 elseif(gp_surface) then
   albedo=0.0
@@ -1316,7 +1316,7 @@ if(turb) then
                               je,                                          &
                               t_surf(:,:),                                 & ! t_surf is intent(inout)
                               mld(:,:),                                    & !AD mld is intent(inout)
-                              land(:,:),                                    & !AD 
+                              land(:,:),                                   & !AD 
                               flux_t(:,:),                                 &
                               flux_q(:,:),                                 &
                               flux_r(:,:),                                 &

@@ -377,8 +377,8 @@ id_flux_lhe = register_diag_field(mod_name, 'flux_lhe',        &
                                  axes(1:2), Time, 'latent heat flux up at surface','watts/m2')
 id_flux_oceanq = register_diag_field(mod_name, 'flux_oceanq',        &
                                  axes(1:2), Time, 'oceanic Q-flux','watts/m2')
-id_heat_cap = register_static_field(mod_name, 'ml_heat_cap',        &
-                                 axes(1:2), 'mixed layer heat capacity','joules/m^2/deg C')
+id_heat_cap = register_diag_field(mod_name, 'ml_heat_cap',        &
+                                 axes(1:2), Time, 'mixed layer heat capacity','joules/m^2/deg C') !AD time varying
 id_delta_t_surf = register_diag_field(mod_name, 'delta_t_surf',        &
                                  axes(1:2), Time, 'change in sst','K')
 id_mld = register_diag_field(mod_name, 'mld',        &
@@ -592,7 +592,7 @@ else
 
 endif
 
-if ( id_heat_cap > 0 ) used = send_data ( id_heat_cap, land_sea_heat_capacity )
+! if ( id_heat_cap > 0 ) used = send_data ( id_heat_cap, land_sea_heat_capacity )
 !s end surface heat capacity calculation
 
 ! if(id_mld > 0)   used = send_data(id_mld, mld) ! AD
@@ -767,14 +767,14 @@ if (do_calc_eff_heat_cap) then
    !  eff_heat_capacity = land_sea_heat_capacity + t_surf_dependence * dt !s need to investigate how this works
 
    ! AD use mld from file
-   call interpolator( mld_interp, Time, mld_new, trim(mld_file) )
+   call interpolator( mld_interp, Time, mld_new, trim(mld_file) ) ! AD should be Time or Time_next
+   mld(:,:) = mld_new(:,:)
     where(land)
-      eff_heat_capacity = land_h_capacity_prefactor * depth * RHO_CP + t_surf_dependence * dt
-      ! write(*,*) 'eff_heat_capacity', eff_heat_capacity
+      land_sea_heat_capacity = land_h_capacity_prefactor *  depth * RHO_CP
     elsewhere
-      eff_heat_capacity = (mld_new * RHO_CP) + t_surf_dependence * dt
-      ! write(*,*) 'eff_heat_capacity calculated using MLD file'
+      land_sea_heat_capacity = mld * RHO_CP
     endwhere
+    eff_heat_capacity = land_sea_heat_capacity + t_surf_dependence * dt
    ! AD end
 
     if (any(eff_heat_capacity .eq. 0.0))  then
@@ -808,6 +808,8 @@ if(id_flux_lhe > 0) used = send_data(id_flux_lhe, HLV * flux_q_total, Time_next)
 if(id_flux_oceanq > 0)   used = send_data(id_flux_oceanq, ocean_qflux, Time_next)
 
 if(id_delta_t_surf > 0)   used = send_data(id_delta_t_surf, delta_t_surf, Time_next)
+if(id_mld > 0)   used = send_data(id_mld, mld,  Time_next) ! AD should be Time or Time_next
+if ( id_heat_cap > 0 ) used = send_data ( id_heat_cap, land_sea_heat_capacity, Time_next ) ! AD should be Time or Time_next
 
 end subroutine mixed_layer
 
