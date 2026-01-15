@@ -119,9 +119,13 @@ logical :: specify_sst_over_ocean_only = .false.
 logical :: do_calc_eff_heat_cap = .true. ! assumes specified SST are off the default.
 logical :: do_read_mld      = .false. !AD
 logical :: do_sc_mld        = .false. !AD use specified mixed layer depth file
+logical :: do_read_alb      = .false. !AD
+logical :: do_sc_alb        = .false. !AD use specified albedo file
+
 
 character(len=256) :: sst_file
-character(len=256) :: mld_file
+character(len=256) :: mld_file    ! AD
+character(len=256) :: albedo_file ! AD
 character(len=256) :: land_option = 'none'
 real,dimension(10) :: slandlon=0,slandlat=0,elandlon=-1,elandlat=-1
 !s End mj extra options
@@ -157,7 +161,8 @@ namelist/mixed_layer_nml/ evaporation, depth, qflux_amp, qflux_width, tconst,&
                               ice_concentration_threshold, ice_albedo_method,&
                               add_latent_heat_flux_anom,flux_lhe_anom_file_name,&
                               flux_lhe_anom_field_name, do_ape_sst, qflux_field_name,&
-                              do_read_mld,do_sc_mld,mld_file
+                              do_read_mld,do_sc_mld,mld_file,do_read_alb,&
+                              do_sc_alb,albedo_file
 
 !=================================================================================================================================
 
@@ -217,6 +222,7 @@ logical, allocatable, dimension(:,:) ::      land_mask
   type(interpolate_type),save :: ice_interp
   type(interpolate_type),save :: flux_lhe_anom_interp  
   type(interpolate_type),save :: mld_interp ! AD read mld from input file
+  type(interpolate_type),save :: albedo_interp ! AD read mld from input file
 
 real inv_cp_air
 
@@ -331,6 +337,10 @@ call get_deg_lon(deg_lon)
         call interpolator_init( mld_interp, trim(mld_file)//'.nc', rad_lonb_2d, rad_latb_2d, data_out_of_bounds=(/CONSTANT/) )
     endif      
 
+    !AD read fixed albedo
+    if (do_sc_alb) then
+         call interpolator_init( albedo_interp, trim(albedo_file)//'.nc', rad_lonb_2d, rad_latb_2d, data_out_of_bounds=(/CONSTANT/) )
+    end if
 
 
 
@@ -388,6 +398,9 @@ if (update_albedo_from_ice) then
                                  axes(1:2), Time, 'surface albedo', 'none')
     id_ice_conc = register_diag_field(mod_name, 'ice_conc',    &
                                  axes(1:2), Time, 'ice_concentration', 'none')
+else if (do_sc_alb) then    
+    id_albedo = register_diag_field(mod_name, 'albedo',    &
+                                 axes(1:2), Time, 'surface albedo', 'none')                                
 else
     id_albedo = register_static_field(mod_name, 'albedo',    &
                                  axes(1:2), 'surface albedo', 'none')
@@ -445,13 +458,21 @@ inv_cp_air = 1.0 / CP_AIR
 
 !s Prescribe albedo distribution here so that it will be the same in both two_stream_gray later and rrtmg radiation.
 
-albedo(:,:) = albedo_value
-
-if(trim(land_option) .eq. 'input') then
-
-where(land) albedo = land_albedo_prefactor * albedo
-
+if (do_sc_alb) then ! AD read albedo distribution or assign value
+   call interpolator( albedo_interp, Time, albedo, trim(albedo_file) )
+else
+   albedo(:,:) = albedo_value
 endif
+
+if (.not. do_sc_alb) then
+
+   if(trim(land_option) .eq. 'input') then
+
+   where(land) albedo = land_albedo_prefactor * albedo
+
+   endif
+
+end if
 
 !mj MiMA albedo choices.
 select case (albedo_choice)
@@ -501,7 +522,7 @@ if (update_albedo_from_ice) then
     call interpolator_init( ice_interp, trim(ice_file_name)//'.nc', rad_lonb_2d, rad_latb_2d, data_out_of_bounds=(/CONSTANT/) )
     call read_ice_conc(Time)
     call albedo_calc(albedo,Time)
-else
+else if (.not. do_sc_alb) then
     if ( id_albedo > 0 ) used = send_data ( id_albedo, albedo )
 endif
 
@@ -658,7 +679,12 @@ else
   land_ice_mask=land_mask
 endif
 
-call albedo_calc(albedo_out,Time_next)
+if (do_sc_alb) then
+   call interpolator( albedo_interp, Time_next, albedo_out, trim(albedo_file) ) 
+   if ( id_albedo > 0 ) used = send_data ( id_albedo, albedo_out, Time_next )
+else
+   call albedo_calc(albedo_out,Time_next)
+endif
 
 !s Add latent heat flux anomalies before any of the calculations take place
 
