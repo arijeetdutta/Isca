@@ -62,6 +62,10 @@ use       tracer_manager_mod, only: get_number_tracers
 
 use idealized_moist_phys_mod, only: idealized_moist_phys_init , idealized_moist_phys , idealized_moist_phys_end
 
+use regional_wind_nudging_mod, only: regional_wind_nudging_init, &
+                                     regional_wind_nudging,      &
+                                     regional_wind_nudging_end
+
 implicit none
 private
 !=================================================================================================================================
@@ -311,6 +315,20 @@ else
                  dt_tg(:,:,:         ),   dt_tracers(:,:,:,:), z_full(:,:,:,current))
 endif
 
+
+! BEGIN REGIONAL WIND NUDGING CHANGE
+! Add nudging after normal physics and before the dynamical core.
+call regional_wind_nudging(                              &
+     Time_next,                                          &
+     rad_lon_2d, rad_lat_2d,                             &
+     p_half(:,:,:,current),                              &
+     p_full(:,:,:,current),                              &
+     ug(:,:,:,previous),                                 &
+     vg(:,:,:,previous),                                 &
+     dt_ug, dt_vg)
+! END REGIONAL WIND NUDGING CHANGE
+
+
 if(previous == current) then
   future = num_time_levels + 1 - current
 else
@@ -384,6 +402,9 @@ if(idealized_moist_model) then
 else
     call hs_forcing_end
 endif
+! BEGIN REGIONAL WIND NUDGING CHANGE
+call regional_wind_nudging_end
+! END REGIONAL WIND NUDGING CHANGE
 #ifdef COLUMN_MODEL
 call column_end(tracer_attributes)
 #else
